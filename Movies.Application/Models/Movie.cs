@@ -1,15 +1,25 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Text.RegularExpressions;
 
 namespace Movies.Application.Models;
 
-public class Movie
+public partial class Movie
 {
-    [Required]
-    public Guid Id { get; init; }
-    [Required]
-    public string Title { get; set; }
-    [Required]
-    public int YearOfRelease { get; set; }
-    [Required]
-    public List<string> Genres { get; init; } = new();
+    public required Guid Id { get; init; }
+    public string Slug => GenerateSlug();
+    public required string Title { get; set; }
+    public required int YearOfRelease { get; set; }
+    public required List<string> Genres { get; init; } = new();
+
+    private string GenerateSlug()
+    {
+        var sluggedTitle = SlugRegex()
+            .Replace(Title, string.Empty)
+            .ToLowerInvariant()
+            .Replace(" ", "-");
+
+        return $"{sluggedTitle}-{YearOfRelease}";
+    }
+
+    [GeneratedRegex("[^0-9A-Za-z _-]", RegexOptions.NonBacktracking, 5)]
+    private static partial Regex SlugRegex();
 }

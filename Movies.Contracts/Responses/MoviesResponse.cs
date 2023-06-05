@@ -1,9 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Movies.Contracts.Responses;
+﻿namespace Movies.Contracts.Responses;
 
 public class MoviesResponse
 {
-    [Required]
-    public IEnumerable<MovieResponse> Items { get; init; } = Enumerable.Empty<MovieResponse>();
+    public required IEnumerable<MovieResponse> Items { get; init; } = Enumerable.Empty<MovieResponse>();
 }

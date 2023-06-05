@@ -1,15 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Movies.Contracts.Responses;
+﻿namespace Movies.Contracts.Responses;
 
 public class MovieResponse
 {
-    [Required]
-    public Guid Id { get; init; }
-    [Required]
-    public string Title { get; init; }
-    [Required]
-    public int YearOfRelease { get; init; }
-    [Required]
-    public IEnumerable<string> Genres { get; init; } = Enumerable.Empty<string>();
+    public required Guid Id { get; init; }
+    public required string Slug { get; init; }
+    public required string Title { get; init; }
+    public required int YearOfRelease { get; init; }
+    public required IEnumerable<string> Genres { get; init; } = Enumerable.Empty<string>();
 }
