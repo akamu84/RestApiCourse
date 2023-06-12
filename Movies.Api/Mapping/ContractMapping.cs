@@ -67,5 +67,20 @@ public static class ContractMapping
             Items = movieRatings.Select(mr => mr.MapToResponse())
         };
     }
+
+    public static GetAllMoviesOptions MapToOptions(this GetAllMoviesRequest request)
+    {
+        return new GetAllMoviesOptions
+        {
+            Title = request.Title,
+            YearOfRelease = request.Year
+        };
+    }
+
+    public static GetAllMoviesOptions WithUser(this GetAllMoviesOptions options, Guid? userId)
+    {
+        options.UserId = userId;
+        return options;
+    }
 }
 
