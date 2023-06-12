@@ -7,11 +7,13 @@ namespace Movies.Application.Services
     public class MovieService : IMovieService
     {
         private readonly IMovieRepository _movieRepository;
+        private readonly IRatingRepository _ratingRepository;
         private readonly IValidator<Movie> _movieValidator;
 
-        public MovieService(IMovieRepository movieRepository, IValidator<Movie> movieValidator)
+        public MovieService(IMovieRepository movieRepository, IRatingRepository ratingRepository, IValidator<Movie> movieValidator)
         {
             _movieRepository = movieRepository;
+            _ratingRepository = ratingRepository;
             _movieValidator = movieValidator;
         }
 
@@ -27,22 +29,22 @@ namespace Movies.Application.Services
             return _movieRepository.DeleteByIdAsync(id, cancellationToken);
         }
 
-        public Task<IEnumerable<Movie>> GetAllAsync(CancellationToken cancellationToken = default)
+        public Task<IEnumerable<Movie>> GetAllAsync(Guid? userId = default, CancellationToken cancellationToken = default)
         {
-            return _movieRepository.GetAllAsync(cancellationToken);
+            return _movieRepository.GetAllAsync(userId, cancellationToken);
         }
 
-        public Task<Movie?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public Task<Movie?> GetByIdAsync(Guid id, Guid? userId = default, CancellationToken cancellationToken = default)
         {
-            return _movieRepository.GetByIdAsync(id, cancellationToken);
+            return _movieRepository.GetByIdAsync(id, userId, cancellationToken);
         }
 
-        public Task<Movie?> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
+        public Task<Movie?> GetBySlugAsync(string slug, Guid? userId = default, CancellationToken cancellationToken = default)
         {
-            return _movieRepository.GetBySlugAsync(slug, cancellationToken);
+            return _movieRepository.GetBySlugAsync(slug, userId, cancellationToken);
         }
 
-        public async Task<Movie?> UpdateAsync(Movie movie, CancellationToken cancellationToken = default)
+        public async Task<Movie?> UpdateAsync(Movie movie, Guid? userId = default, CancellationToken cancellationToken = default)
         {
             await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken: cancellationToken);
 
@@ -51,6 +53,18 @@ namespace Movies.Application.Services
             if (!movieExists) return null;
 
             await _movieRepository.UpdateAsync(movie, cancellationToken);
+
+            if (!userId.HasValue)
+            {
+                var rating = await _ratingRepository.GetRatingAsync(movie.Id, cancellationToken);
+                movie.Rating = rating;
+                return movie;
+            }
+            
+            var ratings = await _ratingRepository.GetRatingAsync(movie.Id, userId.Value, cancellationToken);
+            movie.Rating = ratings.Rating;
+            movie.UserRating = ratings.UserRating;
+            
             return movie;
         }
     }
