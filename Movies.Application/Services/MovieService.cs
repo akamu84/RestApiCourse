@@ -31,6 +31,11 @@ namespace Movies.Application.Services
             return _movieRepository.DeleteByIdAsync(id, cancellationToken);
         }
 
+        public Task<int> GetCountAsync(string? title, int? yearOfRelease, CancellationToken cancellationToken = default)
+        {
+            return _movieRepository.GetCountAsync(title, yearOfRelease, cancellationToken);
+        }
+
         public async Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options, CancellationToken cancellationToken = default)
         {
             await _optionsValidator.ValidateAndThrowAsync(options, cancellationToken);
