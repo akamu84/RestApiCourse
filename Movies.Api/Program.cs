@@ -7,6 +7,7 @@ using Movies.Application.Database;
 using System.Text;
 using Asp.Versioning;
 using Microsoft.Extensions.Options;
+using Movies.Api.Health;
 using Movies.Api.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -55,6 +56,8 @@ builder.Services
 
 builder.Services.AddControllers();
 
+builder.Services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Database");
+
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 builder.Services.AddSwaggerGen(x => x.OperationFilter<SwaggerDefaultValues>());
 
@@ -74,6 +77,8 @@ if (app.Environment.IsDevelopment())
         }
     });
 }
+
+app.MapHealthChecks("_health");
 
 app.UseHttpsRedirection();
 
