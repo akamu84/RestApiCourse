@@ -40,6 +40,12 @@ public class MoviesController : ControllerBase
     }
 
     [HttpGet(ApiEndpoints.Movies.GetAll)]
+    [ResponseCache(
+        Duration = 30 * 60, 
+        VaryByQueryKeys = new [] {"title", "year", "sortBy", "page", "pageSize"}, 
+        VaryByHeader = "Accept, Accept-Encoding", 
+        Location = ResponseCacheLocation.Any)
+    ]
     [ProducesResponseType(typeof(MoviesResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request, CancellationToken cancellationToken)
     {
