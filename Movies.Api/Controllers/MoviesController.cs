@@ -35,6 +35,23 @@ public class MoviesController : ControllerBase
         var response = movie.MapToResponse();
         return Ok(response);
     }
+    
+    [HttpGet(ApiEndpoints.Movies.Get)]
+    public async Task<IActionResult> GetV2([FromRoute] string idOrSlug, CancellationToken cancellationToken)
+    {
+        var userId = HttpContext.GetUserId();
+        var movie = Guid.TryParse(idOrSlug, out var id)
+            ? await _movieService.GetByIdAsync(id, userId, cancellationToken)
+            : await _movieService.GetBySlugAsync(idOrSlug, userId, cancellationToken);
+
+        if (movie == null)
+        {
+            return NotFound();
+        }
+
+        var response = movie.MapToResponse();
+        return Ok(response);
+    }
 
     [HttpGet(ApiEndpoints.Movies.GetAll)]
     public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request, CancellationToken cancellationToken)
