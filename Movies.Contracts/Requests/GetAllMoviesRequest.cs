@@ -1,4 +1,4 @@
-﻿namespace Movies.Contracts.Requests.V1;
+﻿namespace Movies.Contracts.Requests;
 
 public class GetAllMoviesRequest : PagedRequest
 {

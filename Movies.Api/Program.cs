@@ -5,6 +5,7 @@ using Movies.Api.Mapping;
 using Movies.Application;
 using Movies.Application.Database;
 using System.Text;
+using Asp.Versioning;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -37,6 +38,14 @@ builder.Services.AddAuthorization(x =>
         c.User.HasClaim(m => m is { Type: AuthConstants.TrustedMemberClaimName, Value: "true" })
     ));
 });
+
+builder.Services.AddApiVersioning(x =>
+{
+    x.DefaultApiVersion = new ApiVersion(1.0);
+    x.AssumeDefaultVersionWhenUnspecified = true;
+    x.ReportApiVersions = true;
+    x.ApiVersionReader = new MediaTypeApiVersionReader("api-version");
+}).AddMvc();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

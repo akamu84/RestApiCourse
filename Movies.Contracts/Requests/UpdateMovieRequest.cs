@@ -1,6 +1,6 @@
-﻿namespace Movies.Contracts.Requests.V1;
+﻿namespace Movies.Contracts.Requests;
 
-public class CreateMovieRequest
+public class UpdateMovieRequest
 {
     public required string Title { get; init; }
     public required int YearOfRelease { get; init; }
