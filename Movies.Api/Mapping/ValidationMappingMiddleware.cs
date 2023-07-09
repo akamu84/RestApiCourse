@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using Movies.Contracts.Responses;
 using System.Net;
+using Movies.Contracts.Responses.V1;
 
 namespace Movies.Api.Mapping
 {
