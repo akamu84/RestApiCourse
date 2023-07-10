@@ -1,38 +1,37 @@
-﻿using FluentValidation;
-using System.Net;
+﻿using System.Net;
+using FluentValidation;
 using Movies.Contracts.Responses;
 
-namespace Movies.Api.Mapping
+namespace Movies.Api.Mapping;
+
+public class ValidationMappingMiddleware
 {
-    public class ValidationMappingMiddleware
+    private readonly RequestDelegate _next;
+
+    public ValidationMappingMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public ValidationMappingMiddleware(RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context)
+    {
+        try
         {
-            _next = next;
+            await _next(context);
         }
-
-        public async Task InvokeAsync(HttpContext context)
+        catch (ValidationException ex)
         {
-            try
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            var validationFailureResponse = new ValidationFailureResponse
             {
-                await _next(context);
-            }
-            catch (ValidationException ex)
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                var validationFailureResponse = new ValidationFailureResponse
+                Errors = ex.Errors.Select(e => new ValidationResponse
                 {
-                    Errors = ex.Errors.Select(e => new ValidationResponse
-                    {
-                        PropertyName = e.PropertyName,
-                        Message = e.ErrorMessage
-                    })
-                };
+                    PropertyName = e.PropertyName,
+                    Message = e.ErrorMessage
+                })
+            };
 
-                await context.Response.WriteAsJsonAsync(validationFailureResponse);
-            }
+            await context.Response.WriteAsJsonAsync(validationFailureResponse);
         }
     }
 }

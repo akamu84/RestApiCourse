@@ -34,10 +34,7 @@ public class MoviesController : ControllerBase
             ? await _movieService.GetByIdAsync(id, userId, cancellationToken)
             : await _movieService.GetBySlugAsync(idOrSlug, userId, cancellationToken);
 
-        if (movie == null)
-        {
-            return NotFound();
-        }
+        if (movie == null) return NotFound();
 
         var response = movie.MapToResponse();
         return Ok(response);
@@ -46,7 +43,8 @@ public class MoviesController : ControllerBase
     [HttpGet(ApiEndpoints.Movies.GetAll)]
     [OutputCache(PolicyName = "MovieCache")]
     [ProducesResponseType(typeof(MoviesResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] GetAllMoviesRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = HttpContext.GetUserId();
         var options = request.MapToOptions().WithUser(userId);
@@ -76,7 +74,8 @@ public class MoviesController : ControllerBase
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateMovieRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateMovieRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = HttpContext.GetUserId();
 
@@ -84,13 +83,10 @@ public class MoviesController : ControllerBase
 
         var updatedMovie = await _movieService.UpdateAsync(movie, userId, cancellationToken);
 
-        if (updatedMovie is null)
-        {
-            return NotFound();
-        }
+        if (updatedMovie is null) return NotFound();
 
         await _outputCacheStore.EvictByTagAsync("movies", cancellationToken);
-        
+
         var response = movie.MapToResponse();
         return Ok(response);
     }
@@ -103,11 +99,8 @@ public class MoviesController : ControllerBase
     {
         var deleted = await _movieService.DeleteByIdAsync(id, cancellationToken);
 
-        if (!deleted)
-        {
-            return NotFound();
-        }
-        
+        if (!deleted) return NotFound();
+
         await _outputCacheStore.EvictByTagAsync("movies", cancellationToken);
 
         return Ok();

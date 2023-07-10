@@ -4,7 +4,7 @@ using Movies.Application.Models;
 
 namespace Movies.Application.Repositories;
 
-class RatingRepository : IRatingRepository
+internal class RatingRepository : IRatingRepository
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
 
@@ -13,7 +13,8 @@ class RatingRepository : IRatingRepository
         _dbConnectionFactory = dbConnectionFactory;
     }
 
-    public async Task<bool> RateMovieAsync(Guid movieId, int rating, Guid userId, CancellationToken cancellationToken = default)
+    public async Task<bool> RateMovieAsync(Guid movieId, int rating, Guid userId,
+        CancellationToken cancellationToken = default)
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
         var result = await connection.ExecuteAsync(new CommandDefinition("""
@@ -25,7 +26,7 @@ class RatingRepository : IRatingRepository
 
         return result > 0;
     }
-    
+
     public async Task<float?> GetRatingAsync(Guid movieId, CancellationToken cancellationToken = default)
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
@@ -36,7 +37,8 @@ class RatingRepository : IRatingRepository
             """, new { movieId }, cancellationToken: cancellationToken));
     }
 
-    public async Task<(float? Rating, int? UserRating)> GetRatingAsync(Guid movieId, Guid userId, CancellationToken cancellationToken = default)
+    public async Task<(float? Rating, int? UserRating)> GetRatingAsync(Guid movieId, Guid userId,
+        CancellationToken cancellationToken = default)
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
         return await connection.QuerySingleOrDefaultAsync<(float?, int?)>(new CommandDefinition("""
@@ -59,7 +61,8 @@ class RatingRepository : IRatingRepository
         return result > 0;
     }
 
-    public async Task<IEnumerable<MovieRating>> GetRatingsForUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<MovieRating>> GetRatingsForUserAsync(Guid userId,
+        CancellationToken cancellationToken = default)
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
         return await connection.QuerySingleOrDefaultAsync<IEnumerable<MovieRating>>(new CommandDefinition("""

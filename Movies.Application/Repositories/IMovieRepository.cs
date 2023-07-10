@@ -1,6 +1,7 @@
 ﻿using Movies.Application.Models;
 
 namespace Movies.Application.Repositories;
+
 public interface IMovieRepository
 {
     Task<bool> CreateAsync(Movie movie, CancellationToken cancellationToken = default);

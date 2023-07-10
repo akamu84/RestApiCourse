@@ -14,12 +14,12 @@ namespace Movies.Api.Controllers;
 public class RatingsController : ControllerBase
 {
     private readonly IRatingService _ratingService;
-    
+
     public RatingsController(IRatingService ratingService)
     {
         _ratingService = ratingService;
     }
-    
+
     [Authorize]
     [HttpGet(ApiEndpoints.Ratings.GetUserRatings)]
     [ProducesResponseType(typeof(MovieRatingsResponse), StatusCodes.Status200OK)]
@@ -35,13 +35,14 @@ public class RatingsController : ControllerBase
     [HttpPut(ApiEndpoints.Movies.Rate)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RateMovie([FromRoute] Guid id, [FromBody] RateMovieRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> RateMovie([FromRoute] Guid id, [FromBody] RateMovieRequest request,
+        CancellationToken cancellationToken)
     {
         var userId = HttpContext.GetUserId();
         var result = await _ratingService.RateMovieAsync(id, request.Rating, userId!.Value, cancellationToken);
         return result ? Ok() : NotFound();
     }
-    
+
     [Authorize]
     [HttpDelete(ApiEndpoints.Movies.DeleteRating)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -52,5 +53,4 @@ public class RatingsController : ControllerBase
         var result = await _ratingService.DeleteRatingAsync(id, userId!.Value, cancellationToken);
         return result ? Ok() : NotFound();
     }
-    
 }

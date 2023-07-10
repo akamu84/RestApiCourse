@@ -13,8 +13,9 @@ public class DatabaseHealthCheck : IHealthCheck
         _dbConnectionFactory = dbConnectionFactory;
         _logger = logger;
     }
-    
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new())
+
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context,
+        CancellationToken cancellationToken = new())
     {
         try
         {

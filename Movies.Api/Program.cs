@@ -1,20 +1,20 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Movies.Api.Auth;
-using Movies.Api.Mapping;
-using Movies.Application;
-using Movies.Application.Database;
 using System.Text;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Movies.Api.Auth;
 using Movies.Api.Health;
+using Movies.Api.Mapping;
 using Movies.Api.Swagger;
+using Movies.Application;
+using Movies.Application.Database;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
-builder.Services.AddAuthentication(x => 
+builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -38,7 +38,7 @@ builder.Services.AddAuthorization(x =>
     x.AddPolicy(AuthConstants.AdminUserPolicyName, p => p.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
 
     x.AddPolicy(AuthConstants.TrustedMemberPolicyName, p => p.RequireAssertion(c =>
-        c.User.HasClaim(m => m is { Type: AuthConstants.AdminUserClaimName, Value: "true"}) ||
+        c.User.HasClaim(m => m is { Type: AuthConstants.AdminUserClaimName, Value: "true" }) ||
         c.User.HasClaim(m => m is { Type: AuthConstants.TrustedMemberClaimName, Value: "true" })
     ));
 });
@@ -57,12 +57,12 @@ builder.Services
 builder.Services.AddOutputCache(x =>
 {
     x.AddBasePolicy(c => c.Cache());
-    x.AddPolicy("MovieCache", c => 
+    x.AddPolicy("MovieCache", c =>
         c.Cache()
             .Expire(TimeSpan.FromMinutes(1))
             .SetVaryByQuery(new[] { "title", "year", "sortBy", "page", "pageSize" })
             .Tag("movies")
-        );
+    );
 });
 
 builder.Services.AddControllers();
@@ -83,9 +83,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(x =>
     {
         foreach (var description in app.DescribeApiVersions())
-        {
             x.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName);
-        }
     });
 }
 
