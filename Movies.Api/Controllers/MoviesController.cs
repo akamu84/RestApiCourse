@@ -54,7 +54,8 @@ public class MoviesController : ControllerBase
         return Ok(response);
     }
 
-    [Authorize(AuthConstants.TrustedMemberPolicyName)]
+    // [Authorize(AuthConstants.TrustedMemberPolicyName)]
+    [ServiceFilter(typeof(ApiKeyAuthFilter))]
     [HttpPost(ApiEndpoints.Movies.Create)]
     [ProducesResponseType(typeof(MovieResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]

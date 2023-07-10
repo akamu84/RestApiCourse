@@ -30,11 +30,11 @@ public class SwaggerDefaultValues : IOperationFilter
         {
             var description = apiDescription.ParameterDescriptions.First(p => p.Name == parameter.Name);
 
-            parameter.Description ??= description.ModelMetadata?.Description;
+            parameter.Description ??= description.ModelMetadata.Description;
 
             if (parameter.Schema.Default == null && description.DefaultValue != null)
             {
-                var json = JsonSerializer.Serialize(description.DefaultValue, description.ModelMetadata!.ModelType);
+                var json = JsonSerializer.Serialize(description.DefaultValue, description.ModelMetadata.ModelType);
                 parameter.Schema.Default = OpenApiAnyFactory.CreateFromJson(json);
             }
 
