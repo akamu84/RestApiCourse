@@ -11,7 +11,8 @@ services.AddHttpClient()
     .AddSingleton<AuthTokenProvider>()
     .AddRefitClient<IMoviesApi>(s => new RefitSettings
     {
-        AuthorizationHeaderValueGetter = async (_, token) => await s.GetRequiredService<AuthTokenProvider>().GetTokenAsync(token)
+        AuthorizationHeaderValueGetter = async (_, token) =>
+            await s.GetRequiredService<AuthTokenProvider>().GetTokenAsync(token)
     })
     .ConfigureHttpClient(x => x.BaseAddress = new Uri("https://localhost:5001"));
 
