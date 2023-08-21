@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Movies.Api.Auth;
+using Movies.Api.Endpoints;
 using Movies.Api.Health;
 using Movies.Api.Mapping;
 using Movies.Api.Swagger;
@@ -45,6 +46,8 @@ builder.Services.AddAuthorization(x =>
 
 builder.Services.AddScoped<ApiKeyAuthFilter>();
 
+builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddApiVersioning(x =>
     {
         x.DefaultApiVersion = new ApiVersion(1.0);
@@ -52,8 +55,12 @@ builder.Services.AddApiVersioning(x =>
         x.ReportApiVersions = true;
         x.ApiVersionReader = new MediaTypeApiVersionReader("api-version");
     })
-    .AddMvc()
-    .AddApiExplorer();
+    .AddApiExplorer(opts =>
+    {
+        opts.GroupNameFormat = "'v'VVV";
+        opts.SubstituteApiVersionInUrl = true;
+    });
+
 
 builder.Services.AddOutputCache(x =>
 {
@@ -66,7 +73,7 @@ builder.Services.AddOutputCache(x =>
     );
 });
 
-builder.Services.AddControllers();
+// builder.Services.AddControllers();
 
 builder.Services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Database");
 
@@ -78,13 +85,20 @@ builder.Services.AddDatabase(config["Database:ConnectionString"]!);
 
 var app = builder.Build();
 
+app.CreateApiVersionSet();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(x =>
     {
-        foreach (var description in app.DescribeApiVersions())
-            x.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName);
+        var descriptions = app.DescribeApiVersions();
+        foreach (var description in descriptions)
+        {
+            var url = $"/swagger/{description.GroupName}/swagger.json";
+            var name = description.GroupName.ToUpperInvariant();
+            x.SwaggerEndpoint(url, name);
+        }
     });
 }
 
@@ -102,7 +116,8 @@ app.UseOutputCache();
 
 app.UseMiddleware<ValidationMappingMiddleware>();
 
-app.MapControllers();
+// app.MapControllers();
+app.MapApiEndpoints();
 
 var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
 await dbInitializer.InitializeAsync();

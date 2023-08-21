@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Asp.Versioning.Mvc" Version="7.0.0"/>
+        <PackageReference Include="Asp.Versioning.Http" Version="7.0.1"/>
         <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
@@ -17,5 +17,6 @@
         <ProjectReference Include="..\Movies.Application\Movies.Application.csproj"/>
         <ProjectReference Include="..\Movies.Contracts\Movies.Contracts.csproj"/>
     </ItemGroup>
+
 
 </Project>

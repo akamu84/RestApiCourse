@@ -1,0 +1,35 @@
+﻿using Microsoft.AspNetCore.OutputCaching;
+using Movies.Api.Auth;
+using Movies.Api.Mapping;
+using Movies.Application.Services;
+using Movies.Contracts.Requests;
+using Movies.Contracts.Responses;
+
+namespace Movies.Api.Endpoints.Movies;
+
+public static class CreateMovieEndpoint
+{
+    public const string Name = "CreateMovie";
+
+    public static IEndpointRouteBuilder MapCreateMovie(this IEndpointRouteBuilder app)
+    {
+        app.MapPost(ApiEndpoints.Movies.Create,
+                async (CreateMovieRequest request, IMovieService movieService, IOutputCacheStore outputCacheStore,
+                    CancellationToken token) =>
+                {
+                    var movie = request.MapToMovie();
+                    await movieService.CreateAsync(movie, token);
+                    var response = movie.MapToResponse();
+                    await outputCacheStore.EvictByTagAsync("movies", token);
+                    return TypedResults.CreatedAtRoute(response, GetMovieEndpoint.Name, new { idOrSlug = movie.Id });
+                })
+            .WithName(Name)
+            .Produces<MovieResponse>(StatusCodes.Status201Created)
+            .Produces<ValidationFailureResponse>(StatusCodes.Status400BadRequest)
+            .WithApiVersionSet(ApiVersioning.VersionSet)
+            .HasApiVersion(1.0)
+            .RequireAuthorization(AuthConstants.TrustedMemberPolicyName);
+
+        return app;
+    }
+}
