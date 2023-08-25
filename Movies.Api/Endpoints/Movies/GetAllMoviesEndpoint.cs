@@ -24,6 +24,7 @@ public static class GetAllMoviesEndpoint
                         request.PageSize.GetValueOrDefault(PagedRequest.DefaultPage), movieCount);
                     return TypedResults.Ok(response);
                 })
+            .CacheOutput("MovieCache")
             .Produces<MoviesResponse>()
             .WithApiVersionSet(ApiVersioning.VersionSet)
             .HasApiVersion(1.0)
@@ -41,6 +42,7 @@ public static class GetAllMoviesEndpoint
                         request.PageSize.GetValueOrDefault(PagedRequest.DefaultPage), movieCount);
                     return TypedResults.Ok(response);
                 })
+            .CacheOutput("MovieCache")
             .Produces<MoviesResponse>()
             .WithApiVersionSet(ApiVersioning.VersionSet)
             .HasApiVersion(2.0)

@@ -1,5 +1,5 @@
-﻿using Asp.Versioning.Builder;
-using Asp.Versioning.Conventions;
+﻿using Asp.Versioning;
+using Asp.Versioning.Builder;
 
 namespace Movies.Api.Endpoints;
 
@@ -11,8 +11,8 @@ public static class ApiVersioning
     {
         VersionSet = app
             .NewApiVersionSet()
-            .HasApiVersion(1.0)
-            .HasApiVersion(2.0)
+            .HasApiVersion(new ApiVersion(1.0))
+            .HasApiVersion(new ApiVersion(2.0))
             .ReportApiVersions()
             .Build();
 

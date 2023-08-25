@@ -73,8 +73,6 @@ builder.Services.AddOutputCache(x =>
     );
 });
 
-// builder.Services.AddControllers();
-
 builder.Services.AddHealthChecks().AddCheck<DatabaseHealthCheck>("Database");
 
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
@@ -87,21 +85,6 @@ var app = builder.Build();
 
 app.CreateApiVersionSet();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(x =>
-    {
-        var descriptions = app.DescribeApiVersions();
-        foreach (var description in descriptions)
-        {
-            var url = $"/swagger/{description.GroupName}/swagger.json";
-            var name = description.GroupName.ToUpperInvariant();
-            x.SwaggerEndpoint(url, name);
-        }
-    });
-}
-
 app.MapHealthChecks("_health");
 
 app.UseHttpsRedirection();
@@ -110,14 +93,22 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-// app.UseCors();
-
 app.UseOutputCache();
 
 app.UseMiddleware<ValidationMappingMiddleware>();
 
-// app.MapControllers();
 app.MapApiEndpoints();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(x =>
+    {
+        foreach (var description in app.DescribeApiVersions())
+            x.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+                description.GroupName);
+    });
+}
 
 var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
 await dbInitializer.InitializeAsync();

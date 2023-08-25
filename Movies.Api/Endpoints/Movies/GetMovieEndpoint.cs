@@ -22,6 +22,7 @@ public static class GetMovieEndpoint
                     var response = movie.MapToResponse();
                     return TypedResults.Ok(response);
                 })
+            .CacheOutput("MovieCache")
             .Produces<MovieResponse>()
             .Produces(StatusCodes.Status404NotFound)
             .WithApiVersionSet(ApiVersioning.VersionSet)
